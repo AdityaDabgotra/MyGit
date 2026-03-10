@@ -19,7 +19,7 @@ fn main() {
 
     match cli.command {
         Commands::Init => init_repo(),
-        Commands::Add { file } => println!("Adding file {}", file),
+        Commands::Add { file } => add_file(&file),
         Commands::Commit { message } => println!("Commit message: {}", message),
         Commands::Log => println!("Showing commit log"),
     }
@@ -33,4 +33,18 @@ fn init_repo() {
     fs::write(".mygit/index", "").unwrap();
 
     println!("Initialized empty repository");
+}
+
+use std::fs::OpenOptions;
+use std::io::Write;
+
+fn add_file(file: &str) {
+    let mut index = OpenOptions::new()
+        .append(true)
+        .open(".mygit/index")
+        .unwrap();
+
+    writeln!(index, "{}", file).unwrap();
+
+    println!("Added {}", file);
 }
