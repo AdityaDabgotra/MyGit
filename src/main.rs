@@ -21,7 +21,7 @@ fn main() {
         Commands::Init => init_repo(),
         Commands::Add { file } => add_file(&file),
         Commands::Commit { message } => commit(&message),
-        Commands::Log => println!("Showing commit log"),
+        Commands::Log => log_commits(),
     }
 }
 
@@ -122,4 +122,17 @@ fn commit(message: &str) {
         .expect("Failed to clear staging area");
 
     println!("Committed successfully with id {}", commit_id);
+}
+
+fn log_commits() {
+    for entry in fs::read_dir(".mygit/commits").unwrap() {
+        let path = entry.unwrap().path();
+        let data = fs::read_to_string(path).unwrap();
+
+        let commit: Commit = serde_json::from_str(&data).unwrap();
+
+        println!("commit {}", commit.id);
+        println!("message: {}", commit.message);
+        println!();
+    }
 }
